@@ -27,7 +27,19 @@ Monorepo (Bun workspaces):
 
 ## Commands
 
-TBD once scaffolded (dev, lint, format, typecheck, test).
+Run from the repo root:
+
+| Command             | What it does                                                       |
+| ------------------- | ------------------------------------------------------------------ |
+| `bun install`       | Install deps; also points git at `.githooks` (pre-commit hook)     |
+| `bun run dev`       | Server on :3001 (`bun --watch`) and web on :3000 (`next dev`)      |
+| `bun run lint`      | oxlint                                                             |
+| `bun run format`    | prettier --write (`format:check` to verify only)                   |
+| `bun run typecheck` | `tsc --noEmit` in each workspace (web runs `next typegen` first)   |
+| `bun run test`      | `bun test`                                                         |
+| `bun run check`     | lint + format:check + typecheck + test; run by the pre-commit hook |
+
+Server env: copy `apps/server/.env.example` to `apps/server/.env` and set `SEC_USER_AGENT`.
 
 ## Commits
 

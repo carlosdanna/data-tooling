@@ -49,12 +49,12 @@ type Filing = {
 
 ### BE-3 `GET /companies/:ticker/filings`
 
-| Query      | Type                      | Default | Notes                                    |
-| ---------- | ------------------------- | ------- | ---------------------------------------- |
-| `form`     | string, repeatable or CSV | all     | e.g. `form=10-K&form=8-K`; exact match   |
-| `sort`     | `desc` \| `asc`           | `desc`  | by `filingDate`                          |
-| `page`     | int ≥ 1                   | `1`     |                                          |
-| `pageSize` | int 1–100                 | `25`    |                                          |
+| Query      | Type                      | Default | Notes                                  |
+| ---------- | ------------------------- | ------- | -------------------------------------- |
+| `form`     | string, repeatable or CSV | all     | e.g. `form=10-K&form=8-K`; exact match |
+| `sort`     | `desc` \| `asc`           | `desc`  | by `filingDate`                        |
+| `page`     | int ≥ 1                   | `1`     |                                        |
+| `pageSize` | int 1–100                 | `25`    |                                        |
 
 Response:
 
@@ -106,10 +106,10 @@ Errors return `{ error: { code, message } }`.
 
 Avoid hitting EDGAR on every request.
 
-| Data                  | TTL  |
-| --------------------- | ---- |
+| Data                   | TTL  |
+| ---------------------- | ---- |
 | `company_tickers.json` | 24 h |
-| Submissions per CIK   | 1 h  |
+| Submissions per CIK    | 1 h  |
 
 - Two layers: in-memory TTL map → `bun:sqlite` file (`apps/server/.cache/edgar.sqlite`, gitignored) so restarts don't refetch.
 - Deduplicate concurrent in-flight requests for the same key.

@@ -6,11 +6,11 @@ AI tool: Claude Code (Claude Opus 5.5). Each entry has the verbatim prompt and a
 
 Only tools and plugins that actually took part in building this project. Rows are added as new ones are used.
 
-| Name                 | What it is                                     | How it was used                                                                                                        |
-| -------------------- | ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| Claude Code (Opus 5.5) | AI coding agent in the terminal              | Plan mode to agree on each step before acting; AskUserQuestion for the 4 stack decisions; read the assignment PDF; wrote docs, ran git and Bun. |
-| `vercel` plugin      | Claude Code plugin with Next.js/Vercel guidance | Its session-start hook injected current Next.js and platform context and greenfield-project guidance.                  |
-| `ponytail` plugin    | Claude Code plugin enforcing minimal changes   | Its session-start hook keeps changes minimal; shaped scope, e.g. deferring older filings (`filings.files[]`) and avoiding extra packages. |
+| Name                   | What it is                                      | How it was used                                                                                                                                 |
+| ---------------------- | ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Claude Code (Opus 5.5) | AI coding agent in the terminal                 | Plan mode to agree on each step before acting; AskUserQuestion for the 4 stack decisions; read the assignment PDF; wrote docs, ran git and Bun. |
+| `vercel` plugin        | Claude Code plugin with Next.js/Vercel guidance | Its session-start hook injected current Next.js and platform context and greenfield-project guidance.                                           |
+| `ponytail` plugin      | Claude Code plugin enforcing minimal changes    | Its session-start hook keeps changes minimal; shaped scope, e.g. deferring older filings (`filings.files[]`) and avoiding extra packages.       |
 
 ---
 
@@ -85,5 +85,24 @@ Follow-up while reviewing the plan:
 - Created `docs/DECISIONS.md`: 20 decisions (D-01..D-20) grouped by stack, architecture, caching & EDGAR, API and process, each with why, alternatives, date and the prompt-log entry it came from.
 - Created `docs/PROMPTS.md`: 7 self-contained prompts (+1 optional extension) for fresh plan-mode sessions, each naming the docs to read and a "done when" check, plus a shared housekeeping block (checks, prompt log, NOTES.md, DECISIONS.md, conventional commit).
 - NOTES.md: status list now matches the prompt steps; decisions section links to DECISIONS.md. CLAUDE.md links all docs.
+
+**Plugins/skills used:** `vercel` and `ponytail` session hooks (context only).
+
+## 5. Scaffold the monorepo (2026-10-12)
+
+**Prompt** (PROMPTS.md step 1, run in plan mode)
+
+> Read docs/REQUIREMENTS.md and docs/IMPLEMENTATION_PLAN.md (phase 1). Scaffold the Bun workspaces monorepo: root package.json (workspaces apps/\*, scripts dev/lint/format/typecheck/test), tsconfig.base.json (strict), .oxlintrc.json, .prettierrc/.prettierignore. Create apps/server as an Elysia app with a pino logger (pino-pretty in dev), env.ts validating PORT and SEC_USER_AGENT, a .env.example, a GET /health route, and export type App. Create apps/web with create-next-app (TypeScript, Tailwind, App Router, src dir, Bun, no ESLint — we use oxlint) on port 3000; server on 3001. bun run dev at the root must start both. Fill in the Commands section of CLAUDE.md. Done when: bun run dev serves both apps, curl localhost:3001/health works, lint/format/typecheck pass.
+>
+> Setup as well as precommit event to validate the typechecks, test and lint are passing
+
+**Output summary**
+
+- Root: `package.json` (workspaces, `dev`/`lint`/`format`/`format:check`/`typecheck`/`test`/`check`/`prepare`), `tsconfig.base.json` (strict + `noUncheckedIndexedAccess`), `.oxlintrc.json` (`no-console`, `no-explicit-any` as errors), `.prettierrc`, `.prettierignore`, `bun.lock`.
+- Pre-commit: `.githooks/pre-commit` runs `bun run check`; `prepare` sets `core.hooksPath` on `bun install` (D-21).
+- `apps/server`: Elysia 1.4 with `env.ts` (fail-fast `PORT`/`SEC_USER_AGENT`), pino `logger.ts`, request log in `onAfterResponse`, `GET /health`, `export type App`, `.env.example`, and a `bun test` for `/health` (also keeps `bun test` from failing on zero tests).
+- `apps/web`: create-next-app (Next 16.4, React 19.3, Tailwind 4), `next dev --port 3000`, `typecheck` = `next typegen && tsc --noEmit`, tsconfig extends the base.
+- Ran prettier once over the existing docs. Filled in the Commands section of CLAUDE.md; ticked step 1 in NOTES.md; added D-21, D-22.
+- Verified: `bun run dev` serves both (`/health` → `{"status":"ok"}`, web → 200), missing `SEC_USER_AGENT` aborts startup, `bun run check` passes.
 
 **Plugins/skills used:** `vercel` and `ponytail` session hooks (context only).

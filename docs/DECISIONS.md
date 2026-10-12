@@ -146,3 +146,17 @@ Every decision made while building this project. New ones are appended with the 
 - **Decision:** Development follows [PROMPTS.md](PROMPTS.md): each step runs in a new Claude Code session in plan mode, and ends by updating the prompt log, NOTES.md and this file, then committing.
 - **Why:** Small reviewable steps and a traceable log.
 - **Date / Source:** 2026-10-12 · #4
+
+### D-21 — Plain git pre-commit hook
+
+- **Decision:** `.githooks/pre-commit` runs `bun run check` (lint, format check, typecheck, tests). The root `prepare` script sets `git config core.hooksPath .githooks`, so `bun install` enables it on a fresh clone.
+- **Why:** Broken code can't be committed, with no extra dependency.
+- **Alternatives:** husky, lefthook, lint-staged (only checks staged files, but typecheck and tests need the whole project anyway).
+- **Date / Source:** 2026-10-12 · #5
+
+### D-22 — `bun run --filter` to run both apps
+
+- **Decision:** Root `dev` and `typecheck` use `bun run --filter '*' <script>`, which runs each workspace's script in parallel.
+- **Why:** Built into Bun; no task runner needed for two apps.
+- **Alternatives:** concurrently, Turborepo.
+- **Date / Source:** 2026-10-12 · #5

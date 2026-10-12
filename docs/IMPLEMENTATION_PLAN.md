@@ -56,14 +56,14 @@ apps/web/src/
 
 ## Build order
 
-| #   | Phase                                                                             | Done when                                         |
-| --- | --------------------------------------------------------------------------------- | ------------------------------------------------- |
-| 1   | Scaffold: workspaces, oxlint, prettier, tsconfig, Elysia hello, create-next-app   | `bun run dev` serves both apps, lint passes       |
-| 2   | Cache, EDGAR client, columnar transform, tests                                    | `bun test` green on fixture                       |
-| 3   | Routes and error mapping                                                          | curl returns filings and summary for AAPL/SPOT/JPM |
-| 4   | shadcn, Typography, filings page, company switcher, filters                       | switch company, filter, sort, paginate in the UI  |
-| 5   | Summary page                                                                      | comparison table for AAPL, SPOT, JPM              |
-| 6   | README run instructions, NOTES.md, prompt log                                     | a fresh clone runs from the README                |
+| #   | Phase                                                                           | Done when                                          |
+| --- | ------------------------------------------------------------------------------- | -------------------------------------------------- |
+| 1   | Scaffold: workspaces, oxlint, prettier, tsconfig, Elysia hello, create-next-app | `bun run dev` serves both apps, lint passes        |
+| 2   | Cache, EDGAR client, columnar transform, tests                                  | `bun test` green on fixture                        |
+| 3   | Routes and error mapping                                                        | curl returns filings and summary for AAPL/SPOT/JPM |
+| 4   | shadcn, Typography, filings page, company switcher, filters                     | switch company, filter, sort, paginate in the UI   |
+| 5   | Summary page                                                                    | comparison table for AAPL, SPOT, JPM               |
+| 6   | README run instructions, NOTES.md, prompt log                                   | a fresh clone runs from the README                 |
 
 ## Testing
 
