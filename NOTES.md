@@ -10,7 +10,7 @@ Steps follow [docs/PROMPTS.md](docs/PROMPTS.md).
 - [x] 3. API routes (`GET /companies/:ticker/filings`, `GET /filings/summary`)
 - [x] 4. shadcn, Typography and API client
 - [x] 5. Filings page
-- [ ] 6. Summary page
+- [x] 6. Summary page
 - [ ] 7. Submission polish (README)
 - [ ] 8. Extension (optional)
 

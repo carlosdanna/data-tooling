@@ -215,3 +215,63 @@ Follow-up while reviewing the plan:
 - Verified: `bun run check` (27 tests), `next build`, and curl of `/documents` (AAPL 10-K, 1.5 MB: 0.2 s cold, 13 ms cached; a non-sec.gov URL returns 400). The dialog itself was not clicked through in a browser by the agent.
 
 **Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).
+
+## 12. Summary page (2026-10-12)
+
+**Prompt**
+
+> Read docs/REQUIREMENTS.md (FE-2, BE-4) and docs/IMPLEMENTATION_PLAN.md (phase 5). Build app/summary/page.tsx: a server component that reads tickers from search params (default AAPL,SPOT,JPM), calls /filings/summary and renders a comparison table — companies as rows, the most common form types as columns, and the latest 10-K date, with a note when a company has no 10-K (e.g. 20-F filers). Add a client control to add/remove tickers (reuse the company switcher search) that updates the URL. Show per-ticker errors inline. Done when: the page shows AAPL, SPOT and JPM correctly and adding/removing a ticker works.
+
+**Output summary**
+
+- `app/summary/page.tsx` (RSC): reads `?tickers=` (defaults to AAPL,SPOT,JPM only when the param is absent, so removing every ticker shows an empty state). Builds a table with one row per ticker in URL order, the top 8 form types as columns (last 12 months), and the latest 10-K date. A missing 10-K shows "No 10-K · files 20-F" with a footnote. Unknown tickers become an inline error row.
+- `app/summary/params.ts` (+ test): `parseTickers`, `summaryHref` and `topForms`. Forms are ranked by how many companies file them, then by total count, because ranking by raw totals let JPM's ~22k 424B2 prospectuses fill every column.
+- `app/summary/ticker-picker.tsx`: removable ticker badges plus `CompanySearch`, which updates the URL via `router.push`.
+- `company-search.tsx`: optional `onSelect` prop (the default still navigates to the company page).
+- `app/summary/loading.tsx`, plus a "Compare companies →" link on the home page.
+- Verified: `bun run check` (31 tests), plus curl of the rendered `/summary`, `?tickers=…,ZZZZ`, `?tickers=…,MSFT` and `?tickers=`. The add/remove clicks were not exercised in a browser by the agent.
+
+**Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).
+
+## 13. Remove in table, sortable columns with TanStack Table (2026-10-12)
+
+**Prompt**
+
+> The removal of a ticker should be in the table itself. I would like to be able to sort on each table based one latest 10-k or number of specific forms. I think using something like tanstack table is an overkill but is worth adding it here.
+
+**Output summary**
+
+- Added `@tanstack/react-table` 9.3.1 to `apps/web` (v9 API: `useTable`, `tableFeatures({ rowSortingFeature, sortedRowModel })`) (D-32).
+- New client `app/summary/summary-table.tsx`. Each form column and Latest 10-K has a sort button in its header (↑/↓ icon, `aria-sort`); the first click sorts descending and the third clears the sort. Error rows and companies without a 10-K always sort last. Every row, including error rows, has an ✕ remove button that updates `?tickers=`.
+- `page.tsx` now builds rows in URL order (companies plus errors) and renders `SummaryTable`. `ticker-picker.tsx` is now only the add search.
+- Verified: `bun run check` (31 tests), SSR of `/summary?tickers=AAPL,SPOT,JPM,ZZZZ` via curl, and a scratch `useTable` render that checked sort order in both directions (JPM,AAPL,SPOT,ZZZZ desc / SPOT,AAPL,JPM,ZZZZ asc on 8-K). The agent did not click through in a browser.
+
+**Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only); TanStack's bundled `getting-started` / `table-features` skill docs were read from `node_modules`.
+
+## 14. Sort by company, fix search typed before hydration (2026-10-12)
+
+**Prompt**
+
+> It would be good to be able to sort by company. And I noticed a bug where there are times the ticker search box does not search when reloading the page. I don't see any api calls being made either
+
+**Output summary**
+
+- Bug was reproduced with Playwright by delaying `/_next/static` JS 3 s and typing right away. Text typed before React hydrates stays in the DOM input, but `onValueChange` never fires, so the debounced search never runs and no server action is POSTed until another key is pressed. This is most likely on a reload in dev, when chunks compile or load slowly.
+- Fix (`company-search.tsx`, shared by every page): a ref on `CommandInput`. On mount, any value already in the DOM is passed to `search()`. Re-ran the repro: 10 options, 1 POST.
+- `summary-table.tsx`: Company is now a sortable accessor (name, `text` sort, A→Z first, error rows last).
+- Verified in headless Chromium: Company, 8-K and Latest 10-K each sort asc/desc and clear back to URL order, `aria-sort` updates, ✕ removes ZZZZ then SPOT (URL updates), and adding MSFT via search works. `bun run check` passes (31 tests).
+
+**Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).
+
+## 15. No default companies on the summary page, commit (2026-10-12)
+
+**Prompt**
+
+> remove the default companies from the summary and commit these changes
+
+**Output summary**
+
+- `parseTickers` no longer falls back to AAPL,SPOT,JPM. `/summary` starts empty ("Add a company to compare.") and companies are added via the search. Test updated.
+- Committed the summary page work (prompts 12–15) as one `feat(web)` commit.
+
+**Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).

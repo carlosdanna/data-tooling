@@ -223,3 +223,10 @@ Every decision made while building this project. New ones are appended with the 
 - **Why:** User request. It also cuts server-action calls while typing.
 - **Alternatives:** No debounce (D-28).
 - **Date / Source:** 2026-10-12 · #11
+
+### D-32 — Summary table uses TanStack Table v9 for sorting
+
+- **Decision:** The summary comparison table is a client component built on `@tanstack/react-table` v9 (`rowSortingFeature` + `createSortedRowModel`). Every form-count column and the latest 10-K column can be sorted. The first click sorts descending, the third click returns to URL order, and error rows plus companies without a 10-K always sort last (`sortUndefined: 'last'`). Sort state is local and not kept in the URL. The remove button sits on each row, including error rows.
+- **Why:** User request. TanStack is more than one table strictly needs, but it is the standard headless table for shadcn and leaves room for more columns or features.
+- **Alternatives:** A hand-written `useState` sort over the rows (about 20 lines); keeping sort state in `?sort=` so it can be shared.
+- **Date / Source:** 2026-10-12 · #13

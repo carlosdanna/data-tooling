@@ -21,9 +21,12 @@ const DEBOUNCE_MS = 200
 export function CompanySearch({
   autoFocus,
   className,
+  onSelect,
 }: {
   autoFocus?: boolean
   className?: string
+  /** Defaults to navigating to the company's filings page. */
+  onSelect?: (ticker: string) => void
 }) {
   const router = useRouter()
   const [query, setQuery] = useState('')
@@ -33,7 +36,12 @@ export function CompanySearch({
   const [searching, setSearching] = useState(false)
   const latest = useRef('')
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
-  useEffect(() => () => clearTimeout(timer.current), [])
+  const input = useRef<HTMLInputElement>(null)
+  useEffect(() => {
+    // Text typed before hydration is in the DOM but never reached onValueChange
+    if (input.current?.value) search(input.current.value)
+    return () => clearTimeout(timer.current)
+  }, [])
 
   function search(q: string) {
     setQuery(q)
@@ -54,7 +62,8 @@ export function CompanySearch({
     setOpen(false)
     setQuery('')
     setResults([])
-    router.push(`/companies/${ticker}`)
+    if (onSelect) onSelect(ticker)
+    else router.push(`/companies/${ticker}`)
   }
 
   return (
@@ -65,6 +74,7 @@ export function CompanySearch({
       className={cn('relative overflow-visible border', className)}
     >
       <CommandInput
+        ref={input}
         value={query}
         onValueChange={search}
         onFocus={() => setOpen(true)}
