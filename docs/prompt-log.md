@@ -124,3 +124,19 @@ Follow-up while reviewing the plan:
 - Verified with a one-off script (not committed): AAPL 1001 filings, SPOT 380 (20-F, no 10-K), JPM 26,293. The second run made no EDGAR calls; the 10-K URL returns 200. Added D-23, D-24.
 
 **Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).
+
+## 7. API routes and error mapping (2026-10-12)
+
+**Prompt** (PROMPTS.md step 3, run in plan mode)
+
+> Read docs/REQUIREMENTS.md (BE-3, BE-4, Errors) and docs/IMPLEMENTATION_PLAN.md (phase 3). The EDGAR client and cache already exist in apps/server/src. Implement pure functions in filings.ts: queryFilings (form filter, repeatable or CSV; sort asc/desc by filingDate; page/pageSize with bounds; plus the distinct forms with counts) and summarize (per-form counts over a rolling 12 months from an injected now, latest 10-K date or null). Add routes GET /companies/search?q=, GET /companies/:ticker/filings and GET /filings/summary?tickers= with Elysia t validation, Promise.allSettled for the summary (per-ticker errors), and an onError mapper to { error: { code, message } } with 400/404/502. Unit-test queryFilings and summarize. Done when: tests pass and curl returns correct data for AAPL, SPOT (latest10K null) and JPM, plus 404 for an unknown ticker.
+
+**Output summary**
+
+- `apps/server/src/filings.ts`: pure `queryFilings` (form filter accepts repeated and CSV values, exact match; sort by `filingDate`; pagination with `totalPages ≥ 1`; `forms: {form, count}[]` over all of the company's filings, not just the filtered ones, so the UI filter keeps every option) and `summarize(filings, now)` (rolling 12 months, cutoff day included; `latest10K` exact `10-K` match).
+- `routes/companies.ts` (`/companies/search`, `/companies/:ticker/filings`) and `routes/filings.ts` (`/filings/summary`, `Promise.allSettled`, tickers deduped and upper-cased). `t` schemas: `page ≥ 1`, `pageSize` 1–100, `sort` asc|desc.
+- `index.ts`: `onError` maps `NotFoundError` → 404, `UpstreamError` → 502, validation → 400, unknown route → 404, anything else → 500 with a generic message. All return `{ error: { code, message } }`.
+- `filings.test.ts`: 9 tests. `bun run check` passes (18 tests).
+- Checked with curl: AAPL filter/sort/pagination, SPOT `latest10K: null`, JPM `latest10K: 2026-02-13`, unknown ticker 404 (and listed in `errors[]` in the summary), `pageSize=500` → 400. NOTES.md: step 3 ticked, SPOT/20-F note added.
+
+**Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).
