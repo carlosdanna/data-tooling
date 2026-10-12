@@ -75,7 +75,11 @@ export function CompanySearch({
       shouldFilter={false}
       value={active}
       onValueChange={setActive}
-      className={cn('relative overflow-visible border', className)}
+      className={cn(
+        // drop the popover card chrome so only the input pill shows
+        'relative overflow-visible rounded-none bg-transparent p-0 **:data-[slot=command-input-wrapper]:p-0 **:data-[slot=input-group]:h-10 **:data-[slot=input-group]:bg-background **:data-[slot=input-group]:shadow-xs',
+        className,
+      )}
     >
       <CommandInput
         ref={input}
@@ -95,7 +99,7 @@ export function CompanySearch({
         <CommandList
           // keep focus in the input so a click doesn't blur and close the list first
           onMouseDown={(e) => e.preventDefault()}
-          className="absolute inset-x-0 top-full z-50 mt-1 rounded-xl border bg-popover p-1 shadow-md"
+          className="absolute inset-x-0 top-full z-50 mt-2 rounded-2xl border bg-popover p-1 shadow-lg"
         >
           {searching && results.length === 0 ? (
             <Typography variant="muted" role="status" className="py-6 text-center">

@@ -335,3 +335,27 @@ Follow-up while reviewing the plan:
 - Two commits: `chore(web): apply shadcn preset b2C8SQI9Q` (preset files only), then `feat(web)` for prompts 16–17 (features, API gate, docs).
 
 **Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).
+
+## 19. Search box styling (2026-10-12)
+
+**Prompt**
+
+> I really dislike the box around the ticker search box can you make some visual improvements?
+
+**Output summary**
+
+- `apps/web/src/components/company-search.tsx`: removed the outer bordered/padded popover card around the search input so only the pill shows; input is 40px tall on the page background with a light shadow; results dropdown sits a bit lower with rounder corners and a stronger shadow. Applies to home, company and summary pages.
+
+**Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).
+
+## 20. Commit (2026-10-12)
+
+**Prompt**
+
+> commit this
+
+**Output summary**
+
+- One commit: `style(web): drop the box around the company search input` (prompt 19).
+
+**Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).
