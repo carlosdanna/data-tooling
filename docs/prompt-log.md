@@ -173,3 +173,27 @@ Follow-up while reviewing the plan:
 - `bun dev` hang: web now depends on `server` (`workspace:*`), so `bun run --filter` ran the scripts in dependency order and waited for the never-ending server `dev`. Root `dev` is now `bun run --parallel --filter '*' dev`. Verified both apps start.
 
 **Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).
+
+## 10. Filings page, filters, company search (2026-10-12)
+
+**Prompt** (PROMPTS.md step 5, run in plan mode)
+
+> Read docs/REQUIREMENTS.md (FE-1) and docs/IMPLEMENTATION_PLAN.md (phase 4). shadcn, Typography and the Eden client already exist in apps/web. Build app/companies/[ticker]/page.tsx as a server component that reads form, sort and page from search params and renders a filings table (form badge, filing date, report date, description, link to sec.gov in a new tab) with pagination. Add a client filters.tsx (form multi-select from the forms list, sort toggle) that updates the URL with router.replace, and a company-switcher.tsx that searches tickers via a server action and navigates. / redirects to /companies/AAPL. Include loading, empty, error and unknown-ticker states. Done when: in the browser I can switch between AAPL, SPOT and JPM, filter by form, sort and paginate, and the URL reflects the state.
+
+**Plan feedback**
+
+> No, I would like the app/page.tsx to have a search box in the middle of the page with a fuzzy search between company name and ticker, the user can use to search for their company. When the user press enter it should go to the company/[ticker]/page.tsx. If there is no ticker to select then the user should remain in the app/page.tsx
+
+**Output summary**
+
+- Server: `searchTickers` now uses a pure `rankCompanies` with fuzzy matching. The tiers are exact ticker, ticker prefix, name word-prefix, name substring, then subsequence (`jpmc` → JPM). Matching ignores case and punctuation. There is one result per CIK (JPM, not JPM-PC/VYLD), and ties go to SEC list order, which is roughly market cap. `tickers.test.ts` added (D-28).
+- `/` is a centered search page instead of the redirect (D-27). `components/company-search.tsx` is an inline cmdk box that calls the `searchCompanies` server action (`app/actions.ts`). Enter or a click opens `/companies/[ticker]`. Enter with no results does nothing. The same component is the switcher in the filings header.
+- `app/companies/[ticker]/`:
+  - `page.tsx`: RSC with the table and Prev/Next pagination links, plus unknown-ticker, error and empty states.
+  - `loading.tsx`.
+  - `filters.tsx`: forms multi-select with counts and Clear, plus the sort toggle. It calls `router.replace` in a transition (dims the table while pending) and resets to page 1.
+  - `params.ts` + test: parse and validate search params and build hrefs.
+- Fix: Eden parsed `"2025-10-31"` strings into `Date` objects at runtime (React crashed on the table), so `lib/api.ts` sets `parseDate: false`.
+- Verified: `bun run check`, `next build`, and curl of the search API and of the AAPL/SPOT/JPM/ZZZZ pages (rows, pagination, unknown-ticker and empty states). The interactive browser walkthrough was not run by the agent because no browser tools were available.
+
+**Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).

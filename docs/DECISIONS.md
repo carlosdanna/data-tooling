@@ -188,3 +188,24 @@ Every decision made while building this project. New ones are appended with the 
 - **Why:** A plain return is merged into every route's success type, so Eden's `data` became `T | { error }` everywhere. `status()` types it as an error response; `data` stays `T` and `error.value` carries the body.
 - **Alternatives:** Narrow `data` in every page.
 - **Date / Source:** 2026-10-12 · #8
+
+### D-27 — Home page is a company search, not a redirect
+
+- **Decision:** `/` shows a centered fuzzy search box. Enter opens `/companies/[ticker]` for the highlighted result and does nothing when there are no results. The same `CompanySearch` component is the switcher on the filings page.
+- **Why:** User feedback on the step 5 plan: the search box is a better entry point than landing on AAPL.
+- **Alternatives:** Redirect `/` to `/companies/AAPL` (original plan).
+- **Date / Source:** 2026-10-12 · #10
+
+### D-28 — Fuzzy ticker search ranked on the server, no library
+
+- **Decision:** `rankCompanies` scores tiers (exact ticker, ticker prefix, name word-prefix, name substring, subsequence) and returns one result per CIK. Ties go to the order of SEC's ticker list (roughly market cap). The web calls it through a server action, with no debounce.
+- **Why:** About 10k companies take one in-memory pass per keystroke. The ticker map stays on the server. A dependency isn't worth a few lines.
+- **Alternatives:** fuse.js; shipping the ticker list to the client; a debounce (add it if search gets slow).
+- **Date / Source:** 2026-10-12 · #10
+
+### D-29 — Filters take URL state as props; Eden `parseDate: false`
+
+- **Decision:** The page parses search params once (`parseFilingsParams`) and passes them to the client `Filters`, which writes back with `router.replace`. The Eden client disables date parsing.
+- **Why:** There is one parser, so the filters need no `useSearchParams` and no extra Suspense boundary. Eden turned ISO date strings into `Date` objects that the types still call `string`.
+- **Alternatives:** `useSearchParams` in `Filters`; formatting `Date` objects in the table.
+- **Date / Source:** 2026-10-12 · #10

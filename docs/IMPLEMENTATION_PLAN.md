@@ -28,7 +28,7 @@ apps/server/src/
   edgar/tickers.ts         ticker → {cik, name} map (24h TTL); resolveTicker, searchTickers
   edgar/submissions.ts     getFilings(cik) (1h TTL): transpose filings.recent → Filing[]
   filings.ts               pure: queryFilings(filings, {form, sort, page, pageSize}), summarize(filings, now)
-  routes/companies.ts      GET /companies/search?q=, GET /companies/:ticker/filings
+  routes/companies.ts      GET /companies/search?q= (fuzzy, one per CIK), GET /companies/:ticker/filings
   routes/filings.ts        GET /filings/summary?tickers=
   *.test.ts                bun test; fixture = trimmed real AAPL submissions JSON
 
@@ -36,8 +36,8 @@ apps/web/src/
   lib/api.ts               treaty<App>(API_URL), server-only
   components/ui/*          shadcn (table, select, badge, button, input, card, command/popover)
   components/ui/typography.tsx   cva-based: as / variant / size / color / weight
-  components/company-switcher.tsx   client: server action → /companies/search, navigates on select
-  app/page.tsx             redirect → /companies/AAPL
+  components/company-search.tsx   client: fuzzy search via server action (app/actions.ts), Enter navigates
+  app/page.tsx             centered company search
   app/companies/[ticker]/page.tsx     RSC: filings table + pagination
   app/companies/[ticker]/filters.tsx  client: form multi-select, sort toggle → router.replace(?form=&sort=)
   app/summary/page.tsx     RSC: ?tickers=AAPL,SPOT,JPM → comparison table
