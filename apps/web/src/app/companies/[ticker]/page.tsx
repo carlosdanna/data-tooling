@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { ExternalLinkIcon } from 'lucide-react'
 import { CompanySearch } from '@/components/company-search'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -13,6 +12,7 @@ import {
 } from '@/components/ui/table'
 import { Typography } from '@/components/ui/typography'
 import { api } from '@/lib/api'
+import { DocumentDialog } from './document-dialog'
 import { Filters } from './filters'
 import { filingsHref, parseFilingsParams } from './params'
 
@@ -93,12 +93,12 @@ export default async function CompanyPage({
                         </Typography>
                       </TableCell>
                       <TableCell className="text-right">
-                        <Button asChild variant="ghost" size="sm">
-                          <a href={f.url} target="_blank" rel="noopener noreferrer">
-                            View <ExternalLinkIcon />
-                            <span className="sr-only">(opens sec.gov in a new tab)</span>
-                          </a>
-                        </Button>
+                        <DocumentDialog
+                          url={f.url}
+                          form={f.form}
+                          description={f.primaryDocDescription ?? f.primaryDocument}
+                          filingDate={f.filingDate}
+                        />
                       </TableCell>
                     </TableRow>
                   ))}

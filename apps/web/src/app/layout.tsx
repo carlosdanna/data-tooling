@@ -19,11 +19,6 @@ export const metadata: Metadata = {
   description: 'Browse and compare SEC EDGAR filings',
 }
 
-const nav = [
-  { href: '/companies/AAPL', label: 'Filings' },
-  { href: '/summary', label: 'Summary' },
-] as const
-
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html
@@ -38,18 +33,6 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
                 EDGAR Filings
               </Typography>
             </Link>
-            {nav.map(({ href, label }) => (
-              <Link key={href} href={href}>
-                <Typography
-                  as="span"
-                  variant="small"
-                  color="muted"
-                  className="hover:text-foreground"
-                >
-                  {label}
-                </Typography>
-              </Link>
-            ))}
           </nav>
         </header>
         <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">{children}</main>

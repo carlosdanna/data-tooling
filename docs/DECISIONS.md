@@ -209,3 +209,17 @@ Every decision made while building this project. New ones are appended with the 
 - **Why:** There is one parser, so the filters need no `useSearchParams` and no extra Suspense boundary. Eden turned ISO date strings into `Date` objects that the types still call `string`.
 - **Alternatives:** `useSearchParams` in `Filters`; formatting `Date` objects in the table.
 - **Date / Source:** 2026-10-12 · #10
+
+### D-30 — Filing documents open in a dialog through a proxy
+
+- **Decision:** "View" opens a dialog with a sandboxed iframe of `/documents?url=` (a Next route handler). The handler gets the document from the API's `GET /documents`, which only accepts sec.gov filing-archive URLs and caches documents for 7 days. The dialog has "Open on sec.gov" and "Close".
+- **Why:** The user wants to stay on the site. sec.gov forbids framing (`X-Frame-Options: SAMEORIGIN`), so the document has to come from our origin. The URL allow-list stops the proxy from fetching arbitrary URLs. The `CSP: sandbox` header and the iframe `sandbox` attribute stop filing scripts from running on our origin.
+- **Alternatives:** Link to sec.gov in a new tab (previous); `srcDoc` through a server action; rendering only XBRL facts.
+- **Date / Source:** 2026-10-12 · #11
+
+### D-31 — Debounce company search (200 ms)
+
+- **Decision:** `CompanySearch` waits 200 ms after the last keystroke before calling the server action. This replaces the no-debounce shortcut in D-28.
+- **Why:** User request. It also cuts server-action calls while typing.
+- **Alternatives:** No debounce (D-28).
+- **Date / Source:** 2026-10-12 · #11

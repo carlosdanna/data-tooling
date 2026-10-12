@@ -30,6 +30,7 @@ apps/server/src/
   filings.ts               pure: queryFilings(filings, {form, sort, page, pageSize}), summarize(filings, now)
   routes/companies.ts      GET /companies/search?q= (fuzzy, one per CIK), GET /companies/:ticker/filings
   routes/filings.ts        GET /filings/summary?tickers=
+  routes/documents.ts      GET /documents?url= (sec.gov filing archive only, 7d cache)
   *.test.ts                bun test; fixture = trimmed real AAPL submissions JSON
 
 apps/web/src/
@@ -40,6 +41,8 @@ apps/web/src/
   app/page.tsx             centered company search
   app/companies/[ticker]/page.tsx     RSC: filings table + pagination
   app/companies/[ticker]/filters.tsx  client: form multi-select, sort toggle → router.replace(?form=&sort=)
+  app/companies/[ticker]/document-dialog.tsx  client: sandboxed iframe of /documents, link to sec.gov
+  app/documents/route.ts   serves a filing document (via the API) for the dialog iframe
   app/summary/page.tsx     RSC: ?tickers=AAPL,SPOT,JPM → comparison table
 ```
 

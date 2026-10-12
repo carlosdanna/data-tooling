@@ -3,6 +3,7 @@ import { env } from './env'
 import { NotFoundError, UpstreamError } from './errors'
 import { logger } from './logger'
 import { companies } from './routes/companies'
+import { documents } from './routes/documents'
 import { filings } from './routes/filings'
 
 export const app = new Elysia()
@@ -24,6 +25,7 @@ export const app = new Elysia()
   .get('/health', () => ({ status: 'ok' }))
   .use(companies)
   .use(filings)
+  .use(documents)
 
 export type App = typeof app
 

@@ -24,7 +24,7 @@ All decisions, with reasons and alternatives, are in [docs/DECISIONS.md](docs/DE
 
 ## What's missing & how I'd finish it
 
-- Company search has no debounce. Each keystroke is one server-action call answered from the cached ticker map (D-28).
+- Filing documents are cached whole in the server's in-memory layer (a 10-K is about 1–2 MB). An LRU bound is the next step if memory grows (D-30).
 - Pagination is Prev/Next only, at a fixed page size of 25.
 
 ## Time log

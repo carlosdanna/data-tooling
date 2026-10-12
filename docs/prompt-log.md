@@ -197,3 +197,21 @@ Follow-up while reviewing the plan:
 - Verified: `bun run check`, `next build`, and curl of the search API and of the AAPL/SPOT/JPM/ZZZZ pages (rows, pagination, unknown-ticker and empty states). The interactive browser walkthrough was not run by the agent because no browser tools were available.
 
 **Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).
+
+## 11. Debounce, no top nav, documents in a dialog (2026-10-12)
+
+**Prompt**
+
+> add a debounce to the company search and remove the navigation items on the top. Also I am don't like the idea the user navigates out of the site to see the document can we render it in a dialog where the user can click on a button if they want to go to the document itself or close the dialog.
+
+**Output summary**
+
+- `company-search.tsx`: 200 ms debounce (the timer is cleared on unmount). It shows "Searching…" until results arrive, which removes the "No matching company" flash.
+- Layout: the Filings/Summary nav links are gone and only the home title link remains.
+- sec.gov sends `X-Frame-Options: SAMEORIGIN`, so it can't be framed directly. Added a document proxy (D-30):
+  - Server `GET /documents?url=` accepts only `https://www.sec.gov/Archives/edgar/data/<cik>/<accession>/<file>` (no `..`, no query string) and caches documents for 7 days. `fetchText` shares the throttle and User-Agent with `fetchJson`. Test added for rejected URLs.
+  - Web route handler `app/documents/route.ts` serves the document as HTML with a `<base>` pointing at sec.gov (images, links in a new tab) and a `CSP: sandbox` header.
+  - `document-dialog.tsx`: the "View" button opens a wide dialog with a sandboxed iframe, a loading state, and "Close" / "Open on sec.gov" buttons.
+- Verified: `bun run check` (27 tests), `next build`, and curl of `/documents` (AAPL 10-K, 1.5 MB: 0.2 s cold, 13 ms cached; a non-sec.gov URL returns 400). The dialog itself was not clicked through in a browser by the agent.
+
+**Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).

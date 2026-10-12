@@ -11,7 +11,7 @@ function throttle(): Promise<void> {
   return turn
 }
 
-export async function fetchJson<T>(url: string): Promise<T> {
+async function edgarFetch(url: string): Promise<Response> {
   await throttle()
   const start = performance.now()
   let res: Response
@@ -26,5 +26,13 @@ export async function fetchJson<T>(url: string): Promise<T> {
   const ms = Math.round(performance.now() - start)
   logger.info({ url, status: res.status, ms }, 'edgar request')
   if (!res.ok) throw new UpstreamError(`EDGAR returned ${res.status} for ${url}`)
-  return (await res.json()) as T
+  return res
+}
+
+export async function fetchJson<T>(url: string): Promise<T> {
+  return (await (await edgarFetch(url)).json()) as T
+}
+
+export async function fetchText(url: string): Promise<string> {
+  return (await edgarFetch(url)).text()
 }
