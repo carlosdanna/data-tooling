@@ -11,6 +11,7 @@ Only tools and plugins that actually took part in building this project. Rows ar
 | Claude Code (Opus 5.5) | AI coding agent in the terminal                 | Plan mode to agree on each step before acting; AskUserQuestion for the 4 stack decisions; read the assignment PDF; wrote docs, ran git and Bun. |
 | `vercel` plugin        | Claude Code plugin with Next.js/Vercel guidance | Its session-start hook injected current Next.js and platform context and greenfield-project guidance.                                           |
 | `ponytail` plugin      | Claude Code plugin enforcing minimal changes    | Its session-start hook keeps changes minimal; shaped scope, e.g. deferring older filings (`filings.files[]`) and avoiding extra packages.       |
+| `superpowers` plugin   | Claude Code plugin with process skills          | Its session-start hook added skill-usage context (brainstorming, verification before completion); no skill changed the code directly.           |
 
 ---
 
@@ -357,5 +358,33 @@ Follow-up while reviewing the plan:
 **Output summary**
 
 - One commit: `style(web): drop the box around the company search input` (prompt 19).
+
+**Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).
+
+## 21. Submission polish (2026-10-12)
+
+**Prompt**
+
+> Read docs/REQUIREMENTS.md (Constraints) and NOTES.md. Write README.md: what it is, prerequisites (Bun version), setup (bun install, .env from .env.example with SEC_USER_AGENT), bun run dev, URLs, curl examples for each endpoint, how to run tests, project layout, and links to NOTES.md, docs/DECISIONS.md and docs/prompt-log.md. Verify by following the README in a fresh clone of the repo in a temp dir. Finish NOTES.md: final status and what's missing and how I'd finish it (e.g. older filings from filings.files[], Redis cache, charts, e2e tests). Make sure docs/prompt-log.md and docs/DECISIONS.md are complete and consistent. Done when: a fresh clone runs from the README alone.
+
+**Output summary**
+
+- New root `README.md`: what it is, Bun ≥ 1.4.3, setup, `bun run dev`, URLs, curl examples for `/health`, `/companies/search`, `/companies/:ticker/filings`, `/filings/summary`, `/documents` and a 404, tests/checks, project layout, doc links.
+- Removed the create-next-app boilerplate `apps/web/README.md` (it told people to use npm/yarn).
+- Verified in a fresh `git clone` in a temp dir: `bun install`, `.env` from the example, `bun run dev`. Every curl worked (SPOT `latest10K: null`, unknown ticker → 404), all pages returned 200 for AAPL/SPOT/JPM, and `bun run check` passed (33 tests). The README's document example now uses a URL taken from a real response, and it names the `url` field.
+- `NOTES.md`: step 7 ticked, final status, an expanded "What's missing & how I'd finish it" (older filings from `filings.files[]`, Redis, document LRU, charts, e2e + CI, deploy path), time log for steps 6–7.
+- Consistency: D-01–D-36 are sequential, every `#N` source exists, and the `superpowers` row was added to the tools table.
+
+**Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).
+
+## 22. Commit (2026-10-12)
+
+**Prompt**
+
+> (answered in prompt 21's plan: "Yes, one docs commit")
+
+**Output summary**
+
+- One commit: `docs: add readme and finish submission notes` (prompt 21).
 
 **Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).
