@@ -23,7 +23,10 @@ export default async function CompanyPage({
 }: PageProps<'/companies/[ticker]'>) {
   const ticker = decodeURIComponent((await params).ticker).toUpperCase()
   const query = parseFilingsParams(await searchParams)
-  const { data, error } = await api.companies({ ticker }).filings.get({ query })
+  const { history, ...rest } = query
+  const { data, error } = await api
+    .companies({ ticker })
+    .filings.get({ query: history ? { ...rest, history: 'all' } : rest })
   // Eden only types route-level errors (422); 404/502 come from the global onError mapper.
   const status: number | undefined = error?.status
 
@@ -55,7 +58,25 @@ export default async function CompanyPage({
             `status ${String(status)}`}
         </Typography>
       ) : (
-        <Filters ticker={ticker} forms={data.forms} selected={query.form} sort={query.sort}>
+        <Filters
+          ticker={ticker}
+          forms={data.forms}
+          selected={query.form}
+          sort={query.sort}
+          history={query.history}
+        >
+          {data.older && (
+            <Typography variant="muted">
+              Showing recent filings only.{' '}
+              <Link
+                href={filingsHref(ticker, { ...query, history: true, page: 1 })}
+                className="font-medium text-foreground underline underline-offset-4"
+              >
+                Load {data.older.count.toLocaleString('en-US')} older filings (since{' '}
+                {data.older.from.slice(0, 4)})
+              </Link>
+            </Typography>
+          )}
           {data.data.length === 0 ? (
             <Typography color="muted">No filings match these filters.</Typography>
           ) : (
@@ -152,6 +173,7 @@ function Pagination({
             <input key={f} type="hidden" name="form" value={f} />
           ))}
           {query.sort === 'asc' && <input type="hidden" name="sort" value="asc" />}
+          {query.history && <input type="hidden" name="history" value="all" />}
           <Input
             type="number"
             name="page"

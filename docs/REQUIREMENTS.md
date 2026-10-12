@@ -45,7 +45,7 @@ type Filing = {
 
 `url = https://www.sec.gov/Archives/edgar/data/{cik}/{accessionNumber without dashes}/{primaryDocument}`
 
-**Open decision:** `filings.recent` holds only the latest ~1000 filings; older ones are in `filings.files[]` (extra JSON files). Not needed for the 12-month summary; needed for full history of heavy filers (e.g. JPM). Decide whether to load them lazily.
+**Open decision:** `filings.recent` holds only the latest ~1000 filings; older ones are in `filings.files[]` (extra JSON files). Not needed for the 12-month summary; needed for full history of heavy filers (e.g. JPM). Resolved: loaded on request with `history=all` (D-37).
 
 ### BE-3 `GET /companies/:ticker/filings`
 

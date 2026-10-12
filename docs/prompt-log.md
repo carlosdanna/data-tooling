@@ -388,3 +388,32 @@ Follow-up while reviewing the plan:
 - One commit: `docs: add readme and finish submission notes` (prompt 21).
 
 **Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).
+
+## 23. Extension: older filings (2026-10-12)
+
+**Prompt**
+
+> Read NOTES.md "What's missing" and docs/DECISIONS.md. Pick the extension that adds the most value (suggested: load older filings from filings.files[] lazily, or a chart on the summary page) and propose a plan.
+
+**Output summary**
+
+- Picked older filings over a chart: without them the totals, form counts, oldest-first sorting and form filters are silently wrong for any company with a long history (AAPL: 1,001 of 2,265 filings).
+- Server: `getSubmissions` (cache key `submissions:v2:`, keeps `files[]`), `getOlderFilings` (each file cached 30 days), `olderSummary`, and `history=all` on `GET /companies/:ticker/filings`, which returns `older: { count, from } | null`. The summary route uses `getSubmissions`.
+- Web: `history` in `FilingsParams`/`filingsHref`, a "Load N older filings (since YYYY)" link on the filings page, and `history` kept by the filters and the page-jump form.
+- Tests for `olderSummary` and the `history` param (35 pass). Checked live: AAPL goes back to 1994, JPM has 168,762 filings (about 7 s cold), the summary is unchanged.
+- D-37; NOTES step 8 ticked.
+
+**Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).
+
+## 24. Commit (2026-10-12)
+
+**Prompt**
+
+> Commit it as separate server and web commits
+
+**Output summary**
+
+- `feat(server): load older filings from filings.files[] on request` (API, cache, tests).
+- `feat(web): add a link to load older filings` (filings page, params, tests, plus the docs for prompt 23).
+
+**Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).

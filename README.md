@@ -53,7 +53,7 @@ curl 'http://localhost:3001/health'
 curl 'http://localhost:3001/companies/search?q=apple'
 
 # Filings for a company. All query params are optional:
-# form (repeatable), sort=asc|desc (by filing date, default desc), page (default 1), pageSize (1–100, default 25)
+# form (repeatable), sort=asc|desc (by filing date, default desc), page (default 1), pageSize (1–100, default 25), history=all (add filings older than `filings.recent`; the response's `older` says how many)
 curl 'http://localhost:3001/companies/AAPL/filings?form=10-K&form=10-Q&sort=desc&page=1&pageSize=5'
 
 # Summary for several companies. Unknown tickers go to errors[] and don't fail the request

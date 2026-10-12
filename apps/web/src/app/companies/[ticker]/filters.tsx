@@ -22,18 +22,19 @@ type Props = {
   forms: { form: string; count: number }[]
   selected: string[]
   sort: FilingsParams['sort']
+  history: boolean
   children: ReactNode
 }
 
 /** Filter and sort controls; state comes from the page's search params, changes go back to the URL. */
-export function Filters({ ticker, forms, selected, sort, children }: Props) {
+export function Filters({ ticker, forms, selected, sort, history, children }: Props) {
   const router = useRouter()
   const [pending, startTransition] = useTransition()
 
   // Any filter or sort change starts again at page 1.
   const update = (next: Partial<Pick<FilingsParams, 'form' | 'sort'>>) =>
     startTransition(() =>
-      router.replace(filingsHref(ticker, { form: selected, sort, ...next, page: 1 }), {
+      router.replace(filingsHref(ticker, { form: selected, sort, history, ...next, page: 1 }), {
         scroll: false,
       }),
     )

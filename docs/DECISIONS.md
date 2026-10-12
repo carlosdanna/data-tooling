@@ -258,3 +258,10 @@ Every decision made while building this project. New ones are appended with the 
 - **Why:** User request. A slow or stopped API made the search look broken with no explanation. The warm-up removes the slow first search, which waited on SEC's ticker file.
 - **Alternatives:** `/health` that waits for tickers (its test would hit SEC); per-page error handling only.
 - **Date / Source:** 2026-10-12 · #17
+
+### D-37 — Older filings load on request via `?history=all`
+
+- **Decision:** The submissions cache entry is now `{ filings, files }` under `submissions:v2:${cik}` (the old `Filing[]` rows under `submissions:${cik}` have the wrong shape). The filings API returns `older: { count, from }` built from `filings.files[]`. With `history=all` it fetches each older file (cached 30 days, because filed history never changes) and appends it to the recent filings. The filings page shows a "Load N older filings (since YYYY)" link, and the param stays on through paging, filters and sorting. The summary still uses `recent` only. Replaces D-14.
+- **Why:** Totals, per-form counts, oldest-first sorting and form filters are only correct over the whole history, so fetching automatically "when you page past the recent set" would still give wrong numbers. Loading everything up front costs a lot for heavy filers: JPM has about 169k filings, takes about 7 s cold and adds roughly 170 MB of server memory. `recent` always covers at least a year, so the 12-month summary is complete without the older files.
+- **Alternatives:** Load all files up front; fetch automatically past the recent set.
+- **Date / Source:** 2026-10-12 · #23
