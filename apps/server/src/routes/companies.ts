@@ -1,7 +1,7 @@
 import { Elysia, t } from 'elysia'
-import { getFilings } from '../edgar/submissions'
+import { getOlderFilings, getSubmissions } from '../edgar/submissions'
 import { resolveTicker, searchTickers } from '../edgar/tickers'
-import { queryFilings } from '../filings'
+import { olderSummary, queryFilings } from '../filings'
 
 export const companies = new Elysia({ prefix: '/companies' })
   .get('/search', ({ query }) => searchTickers(query.q), {
@@ -11,15 +11,20 @@ export const companies = new Elysia({ prefix: '/companies' })
     '/:ticker/filings',
     async ({ params, query }) => {
       const company = await resolveTicker(params.ticker)
-      const filings = await getFilings(company.cik)
+      const { filings, files } = await getSubmissions(company.cik)
+      const all = query.history === 'all'
       return {
         company,
-        ...queryFilings(filings, {
-          form: query.form,
-          sort: query.sort ?? 'desc',
-          page: query.page ?? 1,
-          pageSize: query.pageSize ?? 25,
-        }),
+        older: all ? null : olderSummary(files),
+        ...queryFilings(
+          all ? [...filings, ...(await getOlderFilings(company.cik, files))] : filings,
+          {
+            form: query.form,
+            sort: query.sort ?? 'desc',
+            page: query.page ?? 1,
+            pageSize: query.pageSize ?? 25,
+          },
+        ),
       }
     },
     {
@@ -28,6 +33,7 @@ export const companies = new Elysia({ prefix: '/companies' })
         sort: t.Optional(t.Union([t.Literal('asc'), t.Literal('desc')])),
         page: t.Optional(t.Integer({ minimum: 1 })),
         pageSize: t.Optional(t.Integer({ minimum: 1, maximum: 100 })),
+        history: t.Optional(t.Literal('all')),
       }),
     },
   )

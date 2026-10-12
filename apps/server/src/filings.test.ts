@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 import type { Filing } from './edgar/submissions'
-import { queryFilings, summarize } from './filings'
+import { olderSummary, queryFilings, summarize } from './filings'
 
 const filing = (form: string, filingDate: string): Filing => ({
   accessionNumber: `${form}-${filingDate}`,
@@ -97,5 +97,20 @@ describe('summarize', () => {
       formCounts: { '20-F': 1, '6-K': 1 },
       latest10K: null,
     })
+  })
+})
+
+describe('olderSummary', () => {
+  test('null when there are no older files', () => {
+    expect(olderSummary([])).toBeNull()
+  })
+
+  test('sums counts and takes the earliest start', () => {
+    expect(
+      olderSummary([
+        { name: 'b.json', filingCount: 1200, filingFrom: '2005-01-01', filingTo: '2015-01-01' },
+        { name: 'a.json', filingCount: 300, filingFrom: '1994-01-26', filingTo: '2004-12-31' },
+      ]),
+    ).toEqual({ count: 1500, from: '1994-01-26' })
   })
 })

@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia'
-import { getFilings } from '../edgar/submissions'
+import { getSubmissions } from '../edgar/submissions'
 import { resolveTicker } from '../edgar/tickers'
 import { summarize } from '../filings'
 
@@ -14,7 +14,7 @@ export const filings = new Elysia({ prefix: '/filings' }).get(
     const results = await Promise.allSettled(
       tickers.map(async (ticker) => {
         const company = await resolveTicker(ticker)
-        return { ...company, ...summarize(await getFilings(company.cik), now) }
+        return { ...company, ...summarize((await getSubmissions(company.cik)).filings, now) }
       }),
     )
     const data = []

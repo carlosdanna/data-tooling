@@ -1,4 +1,4 @@
-import type { Filing } from './edgar/submissions'
+import type { FileRef, Filing } from './edgar/submissions'
 
 export type FilingsQuery = {
   form?: string[]
@@ -43,4 +43,13 @@ export function summarize(filings: Filing[], now: Date) {
     if (f.form === '10-K' && (!latest10K || f.filingDate > latest10K)) latest10K = f.filingDate
   }
   return { formCounts, latest10K }
+}
+
+/** How much history `filings.files[]` holds beyond `recent`; null when there is none. */
+export function olderSummary(files: FileRef[]) {
+  if (!files.length) return null
+  return {
+    count: files.reduce((n, f) => n + f.filingCount, 0),
+    from: files.map((f) => f.filingFrom).reduce((a, b) => (a < b ? a : b)),
+  }
 }
