@@ -1,6 +1,7 @@
 import { Elysia } from 'elysia'
 import { env } from './env'
 import { NotFoundError, UpstreamError } from './errors'
+import { getTickers } from './edgar/tickers'
 import { logger } from './logger'
 import { companies } from './routes/companies'
 import { documents } from './routes/documents'
@@ -32,4 +33,6 @@ export type App = typeof app
 if (import.meta.main) {
   app.listen(env.PORT)
   logger.info(`server listening on http://localhost:${env.PORT}`)
+  // warm the ticker list so the first search doesn't wait on SEC
+  getTickers().catch((err: unknown) => logger.warn({ err }, 'ticker warm-up failed'))
 }

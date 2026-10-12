@@ -275,3 +275,63 @@ Follow-up while reviewing the plan:
 - Committed the summary page work (prompts 12–15) as one `feat(web)` commit.
 
 **Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).
+
+## 16. Hydration, form search, page jump, recent searches, summary nav and memory (2026-10-12)
+
+**Prompt**
+
+> Ok a few things I would like you to take a look
+>
+> 1. There is a hydration issue with the ticker input box (mainly on first render)
+> 2. The form filter is not good I would like to be able to search for an specific form in the select field
+> 3. In companies ticker I would like to be able to navigate to a specific page
+> 4. I would like to store and display the 6 most recent searches in the home page
+> 5. Add summary as a navigation item (I was wrong to remove that one)
+> 6. When I go to the summary page I should be able to see the last selected companies there
+>
+> Also I would like you to configure shadcn with this preset b2C8SQI9Q
+
+**Output summary**
+
+- Hydration: no mismatch in clean headless Chromium, even when typing before hydration. Treated as browser-extension attributes, so the input gets `suppressHydrationWarning` and `autoComplete="off"` (D-35).
+- Form filter: `CommandInput` + `CommandEmpty` in the filters popover; cmdk filters by form name.
+- Pagination: a plain GET form with a page number input and "Go" that keeps the form and sort filters.
+- Recent searches: `rememberCompany` server action plus a `recent` cookie (`app/recent.ts`, tested). Home lists the six newest in a Suspense boundary (D-33).
+- Header nav gets a "Summary" link. The home "Compare companies →" link was removed. `src/proxy.ts` saves and restores the last `/summary` tickers (D-34).
+- shadcn preset: `bunx shadcn apply b2C8SQI9Q` was blocked by the permission classifier (it pulls remote registry code). Left for the user to run.
+- Verified with Playwright: 7 selections leave 6 recents, typing "10-" shows 10-Q/10-K, Go goes to `?sort=asc&page=3`, Summary nav restores AAPL,MSFT, and there are no console errors. `bun run check` passes (33 tests).
+
+**Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).
+
+## 17. Proton Pass hydration mismatch, API availability gate (2026-10-12)
+
+**Prompt**
+
+> Done i did the shadcn apply.
+>
+> Here is the error I am getting
+>
+> (pasted Next.js overlay: hydration mismatch, `<main>` has `data-protonpass-form=""` on the client, `src/app/layout.tsx:41`)
+>
+> I think the issue with search box is the server is taking a long time to load and that is why I get no responses. It would be good for the page not to load unless the server is available. Something like an error message
+
+**Output summary**
+
+- Preset `b2C8SQI9Q` (radix-maia, mist, Inter) applied by the user. Prettier fixed its formatting and the unused `Geist` import was dropped. `typography.tsx` was not affected.
+- Hydration: the cause was the Proton Pass extension tagging `<main>`. Added `suppressHydrationWarning` to `<main>` (D-35, updated).
+- New `components/api-gate.tsx`: the layout checks `/health` (2 s timeout) and shows an error page when the API is down. The server warms the ticker list at startup. `searchCompanies` returns `null` on failure and the search shows "Search is unavailable" (D-36).
+- Verified: e2e flows pass with no console errors. Pausing the API process (SIGSTOP) shows the error page after about 3 s, and resuming restores it. `bun run check` passes (33 tests).
+
+**Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).
+
+## 18. Commit (2026-10-12)
+
+**Prompt**
+
+> commit these changes
+
+**Output summary**
+
+- Two commits: `chore(web): apply shadcn preset b2C8SQI9Q` (preset files only), then `feat(web)` for prompts 16–17 (features, API gate, docs).
+
+**Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).

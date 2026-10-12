@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { CompanySearch } from '@/components/company-search'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import {
   Table,
   TableBody,
@@ -142,9 +143,28 @@ function Pagination({
       <Typography variant="muted">
         Page {page} of {totalPages} · {total} filings
       </Typography>
-      <div className="flex gap-2">
+      <div className="flex items-center gap-2">
         {link(page - 1, 'Previous')}
         {link(page + 1, 'Next')}
+        {/* plain GET form: keeps the current filters and needs no client JS */}
+        <form action={`/companies/${ticker}`} className="flex items-center gap-2">
+          {query.form.map((f) => (
+            <input key={f} type="hidden" name="form" value={f} />
+          ))}
+          {query.sort === 'asc' && <input type="hidden" name="sort" value="asc" />}
+          <Input
+            type="number"
+            name="page"
+            min={1}
+            max={totalPages}
+            defaultValue={page}
+            aria-label="Page number"
+            className="h-7 w-20"
+          />
+          <Button type="submit" variant="outline" size="sm">
+            Go
+          </Button>
+        </form>
       </div>
     </nav>
   )

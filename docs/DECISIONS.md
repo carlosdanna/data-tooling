@@ -230,3 +230,31 @@ Every decision made while building this project. New ones are appended with the 
 - **Why:** User request. TanStack is more than one table strictly needs, but it is the standard headless table for shadcn and leaves room for more columns or features.
 - **Alternatives:** A hand-written `useState` sort over the rows (about 20 lines); keeping sort state in `?sort=` so it can be shared.
 - **Date / Source:** 2026-10-12 · #13
+
+### D-33 — Recent searches live in a cookie
+
+- **Decision:** Choosing a company in `CompanySearch` calls the `rememberCompany` server action. It stores the six newest `{ticker, name}` (one per ticker) in a `recent` cookie. The home page reads that cookie inside a `<Suspense>` boundary and links to each company. `parseRecent` treats the cookie as untrusted and turns junk into `[]`.
+- **Why:** User request. Rendering on the server means no empty-then-filled flash and no new hydration mismatch. The Suspense boundary lets the rest of `/` prerender under Cache Components.
+- **Alternatives:** localStorage (client-only, so it flashes and adds an effect); a server-side table (needs users).
+- **Date / Source:** 2026-10-12 · #16
+
+### D-34 — `proxy.ts` remembers the last summary comparison
+
+- **Decision:** A Next proxy matched on `/summary` saves every `?tickers=` to a `summary-tickers` cookie. A visit with no `tickers` param redirects to the saved list. An explicit empty `?tickers=` clears it.
+- **Why:** User request (the Summary nav link should reopen the last comparison). The add, remove and nav paths all go through the URL, so one proxy covers them with no component changes.
+- **Alternatives:** A server action called from the picker and the remove button; localStorage plus a client redirect.
+- **Date / Source:** 2026-10-12 · #16
+
+### D-35 — Hydration warnings from password-manager extensions are suppressed
+
+- **Decision:** `<main>` in the root layout and `CompanySearch`'s input have `suppressHydrationWarning`. The input also has `autoComplete="off"`.
+- **Why:** The user's overlay showed `data-protonpass-form=""` on `<main>`. Proton Pass tags the container of the search input before React hydrates. Clean headless Chromium had no mismatch. The flag only covers that element's own attributes, not its children.
+- **Alternatives:** Asking users to disable extensions; rendering the search client-only (it would flash).
+- **Date / Source:** 2026-10-12 · #16, #17
+
+### D-36 — Layout gates pages on API health; tickers warm at startup
+
+- **Decision:** The root layout wraps pages in `ApiGate` (inside `<Suspense>`). It calls `GET /health` through Eden with a 2 s timeout and shows "The API is not available" instead of the page when that fails. The server loads the SEC ticker list right after `listen`. A failed search shows "Search is unavailable" instead of "No matching company" or an endless "Searching…".
+- **Why:** User request. A slow or stopped API made the search look broken with no explanation. The warm-up removes the slow first search, which waited on SEC's ticker file.
+- **Alternatives:** `/health` that waits for tickers (its test would hit SEC); per-page error handling only.
+- **Date / Source:** 2026-10-12 · #17

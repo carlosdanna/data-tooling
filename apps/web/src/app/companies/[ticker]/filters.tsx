@@ -6,7 +6,9 @@ import { ArrowDownIcon, ArrowUpIcon, ChevronsUpDownIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Command,
+  CommandEmpty,
   CommandGroup,
+  CommandInput,
   CommandItem,
   CommandList,
   CommandSeparator,
@@ -55,7 +57,9 @@ export function Filters({ ticker, forms, selected, sort, children }: Props) {
           </PopoverTrigger>
           <PopoverContent align="start" className="w-56 p-0">
             <Command>
+              <CommandInput placeholder="Search forms…" aria-label="Search forms" />
               <CommandList>
+                <CommandEmpty>No form found</CommandEmpty>
                 {selected.length > 0 && (
                   <>
                     <CommandGroup>

@@ -1,13 +1,13 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Geist_Mono, Inter } from 'next/font/google'
 import Link from 'next/link'
+import { Suspense } from 'react'
+import { ApiGate } from '@/components/api-gate'
 import { Typography } from '@/components/ui/typography'
 import './globals.css'
+import { cn } from '@/lib/utils'
 
-const geistSans = Geist({
-  variable: '--font-sans',
-  subsets: ['latin'],
-})
+const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
 
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
@@ -23,7 +23,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full font-sans antialiased`}
+      className={cn('h-full', 'antialiased', geistMono.variable, 'font-sans', inter.variable)}
     >
       <body className="flex min-h-full flex-col">
         <header className="border-b">
@@ -33,9 +33,19 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
                 EDGAR Filings
               </Typography>
             </Link>
+            <Link href="/summary">
+              <Typography as="span" size="sm" color="muted" className="hover:text-foreground">
+                Summary
+              </Typography>
+            </Link>
           </nav>
         </header>
-        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">{children}</main>
+        {/* password-manager extensions (e.g. Proton Pass) tag the form container before hydration */}
+        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8" suppressHydrationWarning>
+          <Suspense>
+            <ApiGate>{children}</ApiGate>
+          </Suspense>
+        </main>
       </body>
     </html>
   )
