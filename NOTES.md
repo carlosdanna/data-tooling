@@ -6,7 +6,7 @@ Steps follow [docs/PROMPTS.md](docs/PROMPTS.md).
 
 - [x] 0. Requirements, implementation plan, decisions, prompts
 - [x] 1. Scaffold the monorepo
-- [ ] 2. Cache and EDGAR client
+- [x] 2. Cache and EDGAR client
 - [ ] 3. API routes (`GET /companies/:ticker/filings`, `GET /filings/summary`)
 - [ ] 4. shadcn, Typography and API client
 - [ ] 5. Filings page

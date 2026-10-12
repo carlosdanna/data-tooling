@@ -106,3 +106,21 @@ Follow-up while reviewing the plan:
 - Verified: `bun run dev` serves both (`/health` → `{"status":"ok"}`, web → 200), missing `SEC_USER_AGENT` aborts startup, `bun run check` passes.
 
 **Plugins/skills used:** `vercel` and `ponytail` session hooks (context only).
+
+## 6. Cache and EDGAR client (2026-10-12)
+
+**Prompt** (PROMPTS.md step 2, run in plan mode)
+
+> Read docs/REQUIREMENTS.md (BE-1, BE-2, EDGAR usage rules, Caching) and docs/IMPLEMENTATION_PLAN.md (phase 2). In apps/server implement: cache.ts (getOrSet with an in-memory Map in front of bun:sqlite at .cache/edgar.sqlite, TTL, in-flight dedupe, serve stale on loader failure), edgar/client.ts (fetchJson with User-Agent from env, ≥100ms spacing between calls, non-2xx → UpstreamError), edgar/tickers.ts (ticker map with 24h TTL, resolveTicker → NotFoundError, searchTickers), edgar/submissions.ts (getFilings(cik) with 1h TTL, transposing filings.recent into Filing objects with the sec.gov URL). Save a trimmed real AAPL submissions JSON as a test fixture. Write bun tests for the transform and the cache (TTL expiry, dedupe). No routes yet. Done when: bun test passes and a one-off script resolves AAPL, SPOT and JPM to filings.
+
+**Output summary**
+
+- `apps/server/src/errors.ts`: `NotFoundError`, `UpstreamError`.
+- `cache.ts`: `createCache({ path, now })` (factory so tests can use `:memory:` and a fake clock) + default `cache` at `apps/server/.cache/edgar.sqlite`. Memory Map → SQLite → loader, in-flight dedupe, serves stale on loader failure.
+- `edgar/client.ts`: `fetchJson` with `User-Agent`, a promise-chain throttle (≥100ms between calls), and `UpstreamError` on non-2xx or network failure; logs every upstream call.
+- `edgar/tickers.ts`: `getTickers` (24h), `resolveTicker`, `searchTickers`. `edgar/submissions.ts`: `Filing` type, pure `toFilings`, `getFilings` (1h).
+- Fixture `edgar/__fixtures__/aapl-submissions.json`: 11 real AAPL rows (Form 4, 144 with empty `reportDate`, 10-K, 10-Q, 8-K).
+- Tests: `submissions.test.ts` (transpose, URL, empty → null), `cache.test.ts` (TTL, dedupe, stale, rethrow, SQLite persistence). `bun run check` passes (9 tests).
+- Verified with a one-off script (not committed): AAPL 1001 filings, SPOT 380 (20-F, no 10-K), JPM 26,293. The second run made no EDGAR calls; the 10-K URL returns 200. Added D-23, D-24.
+
+**Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).

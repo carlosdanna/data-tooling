@@ -160,3 +160,17 @@ Every decision made while building this project. New ones are appended with the 
 - **Why:** Built into Bun; no task runner needed for two apps.
 - **Alternatives:** concurrently, Turborepo.
 - **Date / Source:** 2026-10-12 · #5
+
+### D-23 — Ticker map cached as a keyed object; simple ranked search
+
+- **Decision:** `company_tickers.json` is cached as `Record<TICKER, { ticker, cik, name }>` (CIK zero-padded to 10 digits). `searchTickers` returns ticker-prefix matches first, then company-name matches.
+- **Why:** Stays JSON-serialisable for the SQLite layer and gives O(1) `resolveTicker`; ~10k entries make a linear search scan cheap.
+- **Alternatives:** An array plus a rebuilt index; fuzzy search (e.g. Fuse.js).
+- **Date / Source:** 2026-10-12 · #6
+
+### D-24 — `filings.recent` can be large; cache it as-is
+
+- **Decision:** Keep caching the full normalised `filings.recent` per CIK. It covers the last year or 1000 filings, whichever is more, so JPM returns ~26k rows (mostly 424B2), about 7.5 MB of JSON. Expired rows stay in SQLite so they can be served stale; they are never pruned.
+- **Why:** Still fast to filter in memory; correcting D-14's "~1000" assumption.
+- **Alternatives:** Store only the columns the API needs per form, or paginate in SQL.
+- **Date / Source:** 2026-10-12 · #6
