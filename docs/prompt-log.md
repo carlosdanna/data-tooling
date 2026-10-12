@@ -68,3 +68,22 @@ Follow-up while reviewing the plan:
 - Added the "Tools & plugins used" table at the top of this log, listing only what was actually used.
 
 **Plugins/skills used:** `vercel` and `ponytail` session hooks (context only).
+
+## 4. Decisions log and step prompts (2026-10-12)
+
+**Prompt**
+
+> Commit these changes, Now create a list of prompts to excecute the implementation plan you described. I will run each one of those prompts manually with a clear memory in plan mode as steps for developing this assignment
+
+Follow-up while reviewing the plan:
+
+> Can you also add a Decisions.md document with all the decisions that were made during this development.
+
+**Output summary**
+
+- Committed `bfd19b0 docs: add implementation plan and plugin usage to prompt log`.
+- Created `docs/DECISIONS.md`: 20 decisions (D-01..D-20) grouped by stack, architecture, caching & EDGAR, API and process, each with why, alternatives, date and the prompt-log entry it came from.
+- Created `docs/PROMPTS.md`: 7 self-contained prompts (+1 optional extension) for fresh plan-mode sessions, each naming the docs to read and a "done when" check, plus a shared housekeeping block (checks, prompt log, NOTES.md, DECISIONS.md, conventional commit).
+- NOTES.md: status list now matches the prompt steps; decisions section links to DECISIONS.md. CLAUDE.md links all docs.
+
+**Plugins/skills used:** `vercel` and `ponytail` session hooks (context only).

@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Guidance for AI assistants working in this repo. Requirements live in [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md); decisions and status in [NOTES.md](NOTES.md).
+Guidance for AI assistants working in this repo. Requirements: [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md). Design: [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md). Decisions: [docs/DECISIONS.md](docs/DECISIONS.md) (append new ones). Step prompts: [docs/PROMPTS.md](docs/PROMPTS.md). Status: [NOTES.md](NOTES.md).
 
 ## Project
 
