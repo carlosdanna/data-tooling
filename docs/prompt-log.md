@@ -140,3 +140,36 @@ Follow-up while reviewing the plan:
 - Checked with curl: AAPL filter/sort/pagination, SPOT `latest10K: null`, JPM `latest10K: 2026-02-13`, unknown ticker 404 (and listed in `errors[]` in the summary), `pageSize=500` → 400. NOTES.md: step 3 ticked, SPOT/20-F note added.
 
 **Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).
+
+## 8. shadcn, Typography and API client (2026-10-12)
+
+**Prompt** (PROMPTS.md step 4, run in plan mode)
+
+> Read docs/REQUIREMENTS.md (UI system) and docs/IMPLEMENTATION_PLAN.md (phase 4). In apps/web: init shadcn/ui and add table, select, badge, button, input, card, popover, command. Build components/ui/typography.tsx in shadcn style with cva: props as (tag), variant (h1–h4, p, lead, small, muted, code — sets the default tag and styles), and size, color, weight (override the variant). Add lib/api.ts: a server-only Eden treaty client typed with App from the server workspace ("server": "workspace:\*"), base URL from API_URL, cache: 'no-store'. Add an app layout with nav (Filings, Summary). Done when: a page shows the Typography variants, the home page renders data from /health via Eden, and typecheck passes.
+
+**Output summary**
+
+- shadcn init (radix base, Nova preset, neutral) and the requested components; `command` also pulled in `dialog`, `input-group`, `textarea`. shadcn now uses its own `cn` package in place of clsx + tailwind-merge.
+- `components/ui/typography.tsx`: one `cva` with `variant` / `size` / `color` / `weight`; overrides come later in the class string so tailwind-merge lets them win. Default tag per variant, `as` overrides it.
+- `lib/api.ts`: `server-only` Eden treaty client, `API_URL` (default `http://localhost:3001`, `.env.example` added), `fetch: { cache: 'no-store' }`.
+- Layout with nav (Filings → `/companies/AAPL`, Summary → `/summary`; both 404 until steps 5–6). Home renders `/health` inside `<Suspense>` (required by `cacheComponents`) with an error state. A `/typography` showcase page was used to check the variants, then removed (not needed for the app).
+- Typecheck fixes: web moved to TypeScript 7 so only one `elysia` copy resolves (D-25); server `onError` now uses `status()` so error bodies stay out of success types (D-26).
+- Verified: `bun run check`, `next build` (`/` partial prerender), home shows `ok` with the API up and the error state with it down; 400/404 responses unchanged.
+
+**Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).
+
+## 9. Follow-ups: time log, dev script (2026-10-12)
+
+**Prompts**
+
+> Kill the background shell and give me information on where it is so next time I can kill it with the process manager. I removed the typography page as well because is not necesary for this work but it was nice to see it. I am noticing in the notes.md the time log is not being updated
+
+> commit this, but the process you kill is giving me problems when running bun dev I get the following log [`web dev $ next dev --port 3000 └─ Waiting for 1 other script(s)`] The other script I don't know what it is. http://localhost:3000 is giving me unable to connect
+
+**Output summary**
+
+- The background server had already exited. Its process: `bun --watch src/index.ts` in `apps/server`, port 3001.
+- NOTES.md Time log filled from commit timestamps; the PROMPTS.md housekeeping block now includes updating it. Entry 8 updated for the removed `/typography` page.
+- `bun dev` hang: web now depends on `server` (`workspace:*`), so `bun run --filter` ran the scripts in dependency order and waited for the never-ending server `dev`. Root `dev` is now `bun run --parallel --filter '*' dev`. Verified both apps start.
+
+**Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).

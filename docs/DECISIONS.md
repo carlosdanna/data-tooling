@@ -174,3 +174,17 @@ Every decision made while building this project. New ones are appended with the 
 - **Why:** Still fast to filter in memory; correcting D-14's "~1000" assumption.
 - **Alternatives:** Store only the columns the API needs per form, or paginate in SQL.
 - **Date / Source:** 2026-10-12 · #6
+
+### D-25 — One TypeScript version (7) across workspaces
+
+- **Decision:** `apps/web` uses `typescript@^7`, like the root and server. The server exposes `"exports": { ".": "./src/index.ts" }` so the web imports `type App` from `server`.
+- **Why:** `elysia` has `typescript` as a peer, so web on TS 5 and server on TS 7 installed two `elysia` copies and Eden rejected `App` ("separate declarations of a private property"). Next 16.4 supports TS 7 by running the project `tsc` CLI.
+- **Alternatives:** Pin the server to TS 5; map `elysia` to one copy with tsconfig `paths`.
+- **Date / Source:** 2026-10-12 · #8
+
+### D-26 — Error responses via `status()` in `onError`
+
+- **Decision:** `onError` returns `status(code, { error })` instead of setting `set.status` and returning the body.
+- **Why:** A plain return is merged into every route's success type, so Eden's `data` became `T | { error }` everywhere. `status()` types it as an error response; `data` stays `T` and `error.value` carries the body.
+- **Alternatives:** Narrow `data` in every page.
+- **Date / Source:** 2026-10-12 · #8

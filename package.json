@@ -5,7 +5,7 @@
     "apps/*"
   ],
   "scripts": {
-    "dev": "bun run --filter '*' dev",
+    "dev": "bun run --parallel --filter '*' dev",
     "lint": "oxlint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

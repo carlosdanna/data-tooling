@@ -8,7 +8,7 @@ Steps follow [docs/PROMPTS.md](docs/PROMPTS.md).
 - [x] 1. Scaffold the monorepo
 - [x] 2. Cache and EDGAR client
 - [x] 3. API routes (`GET /companies/:ticker/filings`, `GET /filings/summary`)
-- [ ] 4. shadcn, Typography and API client
+- [x] 4. shadcn, Typography and API client
 - [ ] 5. Filings page
 - [ ] 6. Summary page
 - [ ] 7. Submission polish (README)
@@ -28,6 +28,12 @@ _TBD_
 
 ## Time log
 
-| Step                     | Time |
-| ------------------------ | ---- |
-| Requirements & repo docs |      |
+| Step                                 | Time            |
+| ------------------------------------ | --------------- |
+| 0. Requirements & repo docs          | — (ended 18:37) |
+| 1. Scaffold the monorepo             | ~15 min         |
+| 2. Cache and EDGAR client            | ~30 min         |
+| 3. API routes                        | ~10 min         |
+| 4. shadcn, Typography and API client | ~20 min         |
+
+Times are taken from the gaps between commits (step 4: up to 19:51), so they're approximate. Step 0's start wasn't recorded.

@@ -13,7 +13,7 @@ Prompts that carry out [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md), one ste
 
 ### Housekeeping block (append to every prompt)
 
-> When done: run lint, format check, typecheck and tests; append an entry to docs/prompt-log.md (verbatim prompt, output summary, plugins/skills used — add any new ones to the "Tools & plugins used" table); tick the step in NOTES.md Status and record deferred items there; append any new decision to docs/DECISIONS.md (next D-NN, with why and alternatives); commit with a Conventional Commit message.
+> When done: run lint, format check, typecheck and tests; append an entry to docs/prompt-log.md (verbatim prompt, output summary, plugins/skills used — add any new ones to the "Tools & plugins used" table); tick the step in NOTES.md Status, add the step's time to the NOTES.md Time log, and record deferred items there; append any new decision to docs/DECISIONS.md (next D-NN, with why and alternatives); commit with a Conventional Commit message.
 
 ---
 

@@ -9,11 +9,10 @@ export const app = new Elysia()
   .onAfterResponse(({ request, path, set }) => {
     logger.info({ method: request.method, path, status: set.status }, 'request')
   })
-  .onError(({ code, error, set }) => {
-    const fail = (status: number, errorCode: string, message: string) => {
-      set.status = status
-      return { error: { code: errorCode, message } }
-    }
+  // status() (not set.status + return) keeps the error body out of each route's success type.
+  .onError(({ code, error, status }) => {
+    const fail = (statusCode: 400 | 404 | 500 | 502, errorCode: string, message: string) =>
+      status(statusCode, { error: { code: errorCode, message } })
     if (error instanceof NotFoundError) return fail(404, 'NOT_FOUND', error.message)
     if (error instanceof UpstreamError) return fail(502, 'UPSTREAM_ERROR', error.message)
     if (code === 'VALIDATION')
