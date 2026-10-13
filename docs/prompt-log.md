@@ -520,3 +520,15 @@ Follow-up while reviewing the plan:
 - Force-pushed `main` to GitHub. All commit SHAs changed.
 
 **Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).
+
+## 32. Fix the assignment link (2026-10-13)
+
+**Prompt**
+
+> fix the broken link in REQUIREMENTS.md
+
+**Output summary**
+
+- `docs/REQUIREMENTS.md`: replaced the dead link to the assignment PDF with its file name as plain text, noting it is not in the repo.
+
+**Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).

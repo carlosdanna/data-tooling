@@ -1,6 +1,6 @@
 # Requirements
 
-Source: [Data_Tooling_-_Coding_Assignment.pdf](Data_Tooling_-_Coding_Assignment.pdf). Time budget ~4 hours including setup.
+Source: `Data_Tooling_-_Coding_Assignment.pdf` (Quartr's brief, not included in the repo). Time budget ~4 hours including setup.
 
 ## Constraints
 
