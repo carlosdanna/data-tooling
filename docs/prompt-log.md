@@ -433,3 +433,41 @@ Follow-up while reviewing the plan:
 - `NOTES.md`: "Slow first load in dev" bullet under what's missing. `README.md`: one-line note under Run.
 
 **Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).
+
+## 26. Commit and alternatives (2026-10-13)
+
+**Prompt**
+
+> commit it, are there other alternatives on how to fix this?
+
+**Output summary**
+
+- Committed `docs: note the slow first load in dev`. Moved an untracked `pnpm-lock.yaml` out of the repo because it failed the pre-commit format check.
+- Alternatives: load `/` once when `next dev` starts (recommended), run from a production build, a search form that works without JavaScript, or hiding the devtools badge (doesn't fix the search box).
+
+## 27. Password-manager hydration mismatch (2026-10-13)
+
+**Prompt**
+
+> I just found this issue can we disable the use of extensions in the input fields and forms?
+>
+> (pasted hydration-mismatch error: `data-protonpass-form=""` on the `/summary` page's `div` in `SummaryPage`)
+
+**Output summary**
+
+- A page can't disable extensions, but it can ask them to skip fields. `CompanySearch` is now wrapped in a `<form role="search">` with `suppressHydrationWarning`, and its input has opt-out attributes for Proton Pass, 1Password, LastPass and Bitwarden. The filings page-jump form got the same flag (D-38).
+- Checked in headless Chromium: Enter still selects a result on `/` and `/summary`, and there are no console errors. Not tested with Proton Pass installed.
+
+**Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).
+
+## 28. Commit (2026-10-13)
+
+**Prompt**
+
+> commit it
+
+**Output summary**
+
+- `fix(web): opt the search out of password managers` (search form, page-jump form, D-38, prompt log 26–28).
+
+**Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).

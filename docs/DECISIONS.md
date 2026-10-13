@@ -265,3 +265,10 @@ Every decision made while building this project. New ones are appended with the 
 - **Why:** Totals, per-form counts, oldest-first sorting and form filters are only correct over the whole history, so fetching automatically "when you page past the recent set" would still give wrong numbers. Loading everything up front costs a lot for heavy filers: JPM has about 169k filings, takes about 7 s cold and adds roughly 170 MB of server memory. `recent` always covers at least a year, so the 12-month summary is complete without the older files.
 - **Alternatives:** Load all files up front; fetch automatically past the recent set.
 - **Date / Source:** 2026-10-12 · #23
+
+### D-38 — Password managers are told to skip the search and page-jump fields
+
+- **Decision:** `CompanySearch` is wrapped in a `<form role="search">` (submit is prevented, because cmdk handles Enter) that has `suppressHydrationWarning`. The input carries opt-outs for the common password managers: `data-protonpass-ignore`, `data-1p-ignore`, `data-lpignore` and `data-bwignore`. The filings page-jump `<form>` gets `suppressHydrationWarning` and `data-protonpass-ignore`. The `<main>` flag from D-35 stays.
+- **Why:** Proton Pass also tagged the `/summary` page's `div` (`data-protonpass-form`), so a flag on each tagged container would never end. A page can't disable extensions. It can ask them to skip fields, and give them a form element it owns to tag.
+- **Alternatives:** `suppressHydrationWarning` on every container that holds an input; rendering the search client-only (it would flash).
+- **Date / Source:** 2026-10-13 · #27

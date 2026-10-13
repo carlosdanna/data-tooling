@@ -71,59 +71,72 @@ export function CompanySearch({
   }
 
   return (
-    <Command
-      shouldFilter={false}
-      value={active}
-      onValueChange={setActive}
-      className={cn(
-        // drop the popover card chrome so only the input pill shows
-        'relative overflow-visible rounded-none bg-transparent p-0 **:data-[slot=command-input-wrapper]:p-0 **:data-[slot=input-group]:h-10 **:data-[slot=input-group]:bg-background **:data-[slot=input-group]:shadow-xs',
-        className,
-      )}
+    // a real <form> gives password managers a container we own to tag, instead of the page's div
+    <form
+      role="search"
+      onSubmit={(e) => e.preventDefault()}
+      className={className}
+      suppressHydrationWarning
+      data-protonpass-ignore="true"
     >
-      <CommandInput
-        ref={input}
-        value={query}
-        onValueChange={search}
-        onFocus={() => setOpen(true)}
-        onBlur={() => setOpen(false)}
-        onKeyDown={(e) => e.key === 'Escape' && setOpen(false)}
-        placeholder="Search company or ticker…"
-        aria-label="Search company or ticker"
-        autoFocus={autoFocus}
-        autoComplete="off"
-        // password-manager extensions (e.g. Proton Pass) tag inputs before hydration
-        suppressHydrationWarning
-      />
-      {open && query.trim() && (
-        <CommandList
-          // keep focus in the input so a click doesn't blur and close the list first
-          onMouseDown={(e) => e.preventDefault()}
-          className="absolute inset-x-0 top-full z-50 mt-2 rounded-2xl border bg-popover p-1 shadow-lg"
-        >
-          {searching && results.length === 0 ? (
-            <Typography variant="muted" role="status" className="py-6 text-center">
-              Searching…
-            </Typography>
-          ) : failed ? (
-            <Typography color="destructive" role="alert" className="py-6 text-center">
-              Search is unavailable. Is the API running?
-            </Typography>
-          ) : (
-            <CommandEmpty>No matching company</CommandEmpty>
-          )}
-          {results.map((c) => (
-            <CommandItem key={c.ticker} value={c.ticker} onSelect={select}>
-              <Badge variant="secondary" className="font-mono">
-                {c.ticker}
-              </Badge>
-              <Typography as="span" size="sm" className="truncate">
-                {c.name}
+      <Command
+        shouldFilter={false}
+        value={active}
+        onValueChange={setActive}
+        className={cn(
+          // drop the popover card chrome so only the input pill shows
+          'relative overflow-visible rounded-none bg-transparent p-0 **:data-[slot=command-input-wrapper]:p-0 **:data-[slot=input-group]:h-10 **:data-[slot=input-group]:bg-background **:data-[slot=input-group]:shadow-xs',
+        )}
+      >
+        <CommandInput
+          ref={input}
+          value={query}
+          onValueChange={search}
+          onFocus={() => setOpen(true)}
+          onBlur={() => setOpen(false)}
+          onKeyDown={(e) => e.key === 'Escape' && setOpen(false)}
+          placeholder="Search company or ticker…"
+          aria-label="Search company or ticker"
+          autoFocus={autoFocus}
+          autoComplete="off"
+          // not a login field: opt out of password managers (Proton Pass, 1Password, LastPass, Bitwarden)
+          data-protonpass-ignore="true"
+          data-1p-ignore
+          data-lpignore="true"
+          data-bwignore
+          // extensions that ignore the opt-outs still tag inputs before hydration
+          suppressHydrationWarning
+        />
+        {open && query.trim() && (
+          <CommandList
+            // keep focus in the input so a click doesn't blur and close the list first
+            onMouseDown={(e) => e.preventDefault()}
+            className="absolute inset-x-0 top-full z-50 mt-2 rounded-2xl border bg-popover p-1 shadow-lg"
+          >
+            {searching && results.length === 0 ? (
+              <Typography variant="muted" role="status" className="py-6 text-center">
+                Searching…
               </Typography>
-            </CommandItem>
-          ))}
-        </CommandList>
-      )}
-    </Command>
+            ) : failed ? (
+              <Typography color="destructive" role="alert" className="py-6 text-center">
+                Search is unavailable. Is the API running?
+              </Typography>
+            ) : (
+              <CommandEmpty>No matching company</CommandEmpty>
+            )}
+            {results.map((c) => (
+              <CommandItem key={c.ticker} value={c.ticker} onSelect={select}>
+                <Badge variant="secondary" className="font-mono">
+                  {c.ticker}
+                </Badge>
+                <Typography as="span" size="sm" className="truncate">
+                  {c.name}
+                </Typography>
+              </CommandItem>
+            ))}
+          </CommandList>
+        )}
+      </Command>
+    </form>
   )
 }

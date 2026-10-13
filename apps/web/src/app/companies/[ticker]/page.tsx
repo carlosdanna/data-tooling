@@ -168,7 +168,13 @@ function Pagination({
         {link(page - 1, 'Previous')}
         {link(page + 1, 'Next')}
         {/* plain GET form: keeps the current filters and needs no client JS */}
-        <form action={`/companies/${ticker}`} className="flex items-center gap-2">
+        {/* password managers tag forms before hydration; this one has no credentials */}
+        <form
+          action={`/companies/${ticker}`}
+          className="flex items-center gap-2"
+          suppressHydrationWarning
+          data-protonpass-ignore="true"
+        >
           {query.form.map((f) => (
             <input key={f} type="hidden" name="form" value={f} />
           ))}
