@@ -489,3 +489,18 @@ Follow-up while reviewing the plan:
 - Committed as `chore(repo): ignore pnpm-lock.yaml`.
 
 **Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).
+
+## 30. Further improvements (2026-10-13)
+
+**Prompt**
+
+> What improvements would you suggest to this system aside from the ones listed already?
+
+> Lets document this as well.
+
+**Output summary**
+
+- Reviewed the server routes, cache, EDGAR client and the web document route. Suggested seven improvements not already in NOTES.md: a ticker cap on the summary, EDGAR fetch timeouts, retries on 429/5xx, keeping the merged full history per CIK, SQLite pruning, a real health check, and precomputed search fields. Also confirmed that the `/documents` URL check, the sandboxed iframe and the `<base href>` are safe.
+- `NOTES.md`: added these items under "What's missing & how I'd finish it". No code changes.
+
+**Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).
