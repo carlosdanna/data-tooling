@@ -417,3 +417,19 @@ Follow-up while reviewing the plan:
 - `feat(web): add a link to load older filings` (filings page, params, tests, plus the docs for prompt 23).
 
 **Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).
+
+## 25. Slow first load in dev (2026-10-13)
+
+**Prompt**
+
+> I've noticed next js takes a few seconds to load its devtools when first running this also affects the search box can you take a look at it?
+
+> I would like you to simply document this issue so the reviewer knows
+
+**Output summary**
+
+- Measured in headless Chromium against the running dev servers. Warm loads hydrate in about 200 ms and the API answers in milliseconds. The wait is Turbopack compiling the route and its dev bundles on the first request after `next dev` starts. The search box waits for hydration too, and text typed before hydration is kept.
+- Proposed warming `/` when `next dev` starts. The user chose to document it instead.
+- `NOTES.md`: "Slow first load in dev" bullet under what's missing. `README.md`: one-line note under Run.
+
+**Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).

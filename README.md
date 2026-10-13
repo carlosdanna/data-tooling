@@ -41,6 +41,8 @@ bun run dev
 
 Try http://localhost:3000/companies/AAPL and http://localhost:3000/summary?tickers=AAPL,SPOT,JPM.
 
+The first page load after `bun run dev` takes a few seconds while Next compiles the route. Until that finishes the search box doesn't show results. Later loads are fast. See [NOTES.md](NOTES.md#whats-missing--how-id-finish-it).
+
 ## API
 
 Errors share one shape: `{ "error": { "code": "NOT_FOUND" | "VALIDATION_ERROR" | "UPSTREAM_ERROR" | "INTERNAL_ERROR", "message": "..." } }`.
