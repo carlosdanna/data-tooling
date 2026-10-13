@@ -504,3 +504,19 @@ Follow-up while reviewing the plan:
 - `NOTES.md`: added these items under "What's missing & how I'd finish it". No code changes.
 
 **Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).
+
+## 31. Remove the assignment PDF from history (2026-10-13)
+
+**Prompt**
+
+> Please remove the assignment pdf from the github history but I think is ok to keep the references to it as the assignment that brought this work to be
+
+> No need for the safety copy, I already have one
+
+**Output summary**
+
+- Rewrote all commits with `git filter-branch --index-filter` to drop `docs/assignment/Data_Tooling_-_Coding_Assignment.pdf`, expired the reflog and ran `git gc --prune=now`.
+- `.gitignore`: added `docs/assignment/*.pdf`. The references in `docs/REQUIREMENTS.md` and this log stay as the record of the brief.
+- Force-pushed `main` to GitHub. All commit SHAs changed.
+
+**Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).

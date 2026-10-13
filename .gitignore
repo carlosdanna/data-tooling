@@ -41,3 +41,6 @@ Thumbs.db
 .vscode/*
 !.vscode/settings.json
 !.vscode/extensions.json
+
+# Assignment brief: referenced in docs, kept out of the public repo
+docs/assignment/*.pdf
