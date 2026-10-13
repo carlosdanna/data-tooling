@@ -471,3 +471,21 @@ Follow-up while reviewing the plan:
 - `fix(web): opt the search out of password managers` (search form, page-jump form, D-38, prompt log 26–28).
 
 **Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).
+
+## 29. Ignore pnpm lockfile (2026-10-13)
+
+**Prompt**
+
+> delete the pnpm-lock.yaml you moved
+
+> add pnpm-lock.yaml to .gitignore
+
+> commit it
+
+**Output summary**
+
+- Deleted the moved `pnpm-lock.yaml` from the session scratchpad.
+- `.gitignore`: added `pnpm-lock.yaml`. Prettier 3 also reads `.gitignore`, so a stray copy no longer fails the pre-commit format check.
+- Committed as `chore(repo): ignore pnpm-lock.yaml`.
+
+**Plugins/skills used:** `ponytail` and `superpowers` session hooks (context only).
